@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Change Info</title>
+</head>
+<body>
+    {% extends 'telegram/main.html' %}
+    {% block content %}
+
+        <h1>Change Profile Info</h1>
+        <form action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row align-items-start">
+                <div class="col-3">
+                  <div class="mb-3">
+                      <label for="photo">Current Profile Photo</label>
+                      <img id="photo" alt="profile photo" class="img-thumbnail" src="{{ userprofile.photo.url }}" style="width: 18rem; margin-top: 9px">
+                  </div>
+                </div>
+                <div class="col-9">
+                    <div class="mb-3">
+                        <label class="form-label" for="username">{{ form.username.label }}</label>
+                        <input type="text" class="form-control"  id="username" name="username" value="{{ userprofile.username }}">
+                      </div>
+                      <div class="mb-3">
+                        <label for="email">{{ form.email.label }}</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ userprofile.email}}">
+                      </div>
+                      <div class="mb-3">
+                        <label for="phone">{{ form.phone.label }}</label>
+                        <input type="text" class="form-control" id="phone" name="phone" value="{{ userprofile.phone }}">
+                      </div>
+                      <div class="mb-3">
+                          <label for="photo" class="form-label">Profile Photo</label>
+                          <input class="form-control" type="file" id="photo" name="photo">
+                      </div>
+                </div>
+            </div>
+            <hr/>
+            <button type="submit" class="btn btn-success">Submit</button>
+
+
+
+{#          <div class="mb-3">#}
+{#            <label class="form-label" for="username">{{ form.username.label }}</label>#}
+{#            <input type="text" class="form-control"  id="username" name="username" value="{{ userprofile.username }}">#}
+{#          </div>#}
+{#          <div class="mb-3">#}
+{#            <label for="email">{{ form.email.label }}</label>#}
+{#            <input type="email" class="form-control" id="email" name="email" value="{{ userprofile.email}}">#}
+{#          </div>#}
+{#          <div class="mb-3">#}
+{#            <label for="phone">{{ form.phone.label }}</label>#}
+{#            <input type="text" class="form-control" id="phone" name="phone" value="{{ userprofile.phone }}">#}
+{#          </div>#}
+{#          <div class="mb-3">#}
+{#              <label for="photo" class="form-label">Profile Photo</label>#}
+{#              <input class="form-control" type="file" id="photo" name="photo">#}
+{#          </div>#}
+{#          <div class="mb-3">#}
+{#              <p>Current Profile Photo</p>#}
+{#              <img class="img-thumbnail" src="{{ userprofile.photo.url }}" style="width: 18rem;">#}
+{#          </div>#}
+{#          <button type="submit" class="btn btn-primary">Submit</button>#}
+        </form>
+        <br/>
+    {% endblock %}
+</body>
+</html>

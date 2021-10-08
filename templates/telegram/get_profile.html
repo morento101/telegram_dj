@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+</head>
+<body>
+    {% extends 'telegram/main.html' %}
+    {% block content %}
+
+        <div class="card" style="width: 25rem; margin: auto;">
+          <img src="{{ request.user.userprofile.photo.url }}" class="card-img-top" alt="Profile Photo">
+            <div class="card-body">
+                <h5 class="card-title">{{ request.user.userprofile.username }}</h5>
+                <p>Email: {{ request.user.userprofile.email }}</p>
+                <p>Phone: {{ request.user.userprofile.phone }}</p>
+                <button class="btn btn-success" onclick="window.location.href='{% url 'update_profile' pk=request.user.userprofile.pk %}';">
+                  Change Info
+                </button>
+            </div>
+        </div>
+
+{#    <p>Username: {{ request.user.userprofile.username }}</p>#}
+{#    <p>Email: {{ request.user.userprofile.email }}</p>#}
+{#    <p>Phone: {{ request.user.userprofile.phone }}</p>#}
+{#    <p>Photo:</p>#}
+{#    <img src="{{ request.user.userprofile.photo.url }}">#}
+{#    <br />#}
+{#    <button onclick="window.location.href='{% url 'update_profile' pk=request.user.pk %}';">#}
+{#      Change Info#}
+{#    </button>#}
+    {% endblock %}
+</body>
+</html>

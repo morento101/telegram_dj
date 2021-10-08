@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Browse</title>
+</head>
+<body>
+    {% extends 'telegram/main.html' %}
+    {% block content %}
+
+        <h3>Browse Groups</h3>
+
+        <div class="list-group">
+                {% for group in groups %}
+                  <a href="{% url 'group_detail' pk=group.pk %}" class="list-group-item list-group-item-action" aria-current="true">
+                    <div class="d-flex w-100 justify-content-between">
+                      <h5 class="mb-1">{{ group.title }}</h5>
+                    </div>
+                    <p>Description: {{ group.description }}</p>
+                    <p class="mb-1">Followers: {{ group.number_followers }}</p>
+                  </a>
+                {% empty %}
+                    <p>There're no groups created by other users right now</p>
+                {% endfor %}
+            </div>
+    {% endblock %}
+</body>
+</html>

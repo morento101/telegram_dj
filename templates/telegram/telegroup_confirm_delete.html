@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delete Group</title>
+</head>
+<body>
+    {% extends 'telegram/main.html' %}
+    {% block content %}
+    <form method="post" action="">
+        {% csrf_token %}
+        <p>Are are you sure you want to delete {{ object.title }}</p>
+        <input class="btn btn-danger" type="submit" value="Confirm">
+    </form>
+        <hr />
+        <button class="btn btn-primary" onclick="window.location.href='{% url 'groups' %}'" >
+            Back
+        </button>
+    {% endblock %}
+</body>
+</html>

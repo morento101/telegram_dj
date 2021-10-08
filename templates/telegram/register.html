@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+</head>
+<body>
+    {% extends 'telegram/main.html' %}
+    {% block content %}
+
+        <h1>Register</h1>
+        <form action="" method="post">
+            {% csrf_token %}
+
+          <div class="form-group">
+            <label class="form-label" for="username">{{ form.username.label }}</label>
+            <input type="text" class="form-control"  id="username" name="username">
+          </div>
+            <div class="form-group">
+            <label class="form-label" for="username">{{ form.email.label }}</label>
+            <input type="email" class="form-control"  id="email" name="email">
+          </div>
+          <div class="form-group">
+            <label for="password1">{{ form.password1.label }}</label>
+            <input type="password" class="form-control" id="password1" name="password1">
+          </div>
+            <div class="form-group">
+            <label for="password1">{{ form.password2.label }}</label>
+            <input type="password" class="form-control" id="password2" name="password2">
+          </div>
+            <br />
+            <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+          <button type="submit" class="btn btn-success">Submit</button>
+
+        </form>
+
+    {% endblock %}
+</body>
+</html>

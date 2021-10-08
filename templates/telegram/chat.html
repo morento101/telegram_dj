@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    {% extends 'telegram/main.html' %}
+    {% block content %}
+
+        <h1>{{ group|title }} Chat</h1>
+        <div id="scroll" style="overflow-y: scroll; height:410px;">
+            <div id="messages-container" class="list-group">
+            </div>
+        </div>
+        <br />
+        <form id="chat-form">
+            {% csrf_token %}
+            <input type="hidden" id="user_pk" name="user_pk" value="{{ request.user.pk }}">
+            <input type="hidden" id="group_pk" name="group_pk" value="{{ group.pk }}">
+            <div class="mb-3">
+                <input type="text" id="message" class="form-control">
+            </div>
+            <div class="mb-3">
+                <input type="submit" value="Send" class="btn btn-success">
+            </div>
+        </form>
+
+
+            <script type="text/javascript">
+              $(document).on('submit', '#chat-form', function(e){
+                e.preventDefault();
+
+                $.ajax({
+                  type:'POST',
+                  url:'send/',
+                  data:{
+                      user_pk:$('#user_pk').val(),
+                      group_pk:$('#group_pk').val(),
+                      message:$('#message').val(),
+                      csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+                  },
+                  success: function(data){
+                     //alert(data)
+                  }
+                });
+                document.getElementById('message').value = ''
+              });
+            </script>
+        <script>
+            var socket = new WebSocket('ws://localhost:8000/ws/get_messages/')
+
+            socket.onmessage = function (event){
+                var data = JSON.parse(event.data)
+                console.log(data)
+                var message = data.message
+            }
+
+                setInterval(function(){
+            $.ajax({
+                type: 'GET',
+                url : "/get_messages/{{ group.pk }}",
+                success: function(response){
+                    console.log(response);
+                    $("#messages-container").empty();
+                    var count = 0;
+                    for (var key in response.messages)
+                    {
+                        var username = response.username[count]
+                        count += 1
+
+                        let date = new Date(response.messages[key].date_send);
+                        let year = date.getFullYear();
+                        let month = date.getMonth()+1;
+                        let dt = date.getDate();
+
+                        if (dt < 10) {
+                          dt = '0' + dt;
+                        }
+                        if (month < 10) {
+                          month = '0' + month;
+                        }
+
+                        let hour = date.getUTCHours() + 3;
+                        let minute = date.getUTCMinutes();
+
+                        if (hour < 10) {
+                            hour = '0' + hour
+                        }
+
+                        if (minute < 10) {
+                            minute = '0' + minute
+                        }
+
+                        date = year + '-' + month + '-' + dt + '-' + hour + ':' + minute;
+
+                        var temp = '<div class="list-group-item list-group-item-action" aria-current="true"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1">'+username+'</h6><small>'+date+'</small></div><p class="mb-1">'+response.messages[key].value+'</p></div>'
+
+                        if (username === response.current_user){
+                            temp = '<div class="list-group-item list-group-item-action list-group-item-secondary" aria-current="true"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1">'+username+'</h6><small>'+date+'</small></div><p class="mb-1">'+response.messages[key].value+'</p></div>'
+                        }
+                        $("#messages-container").append(temp);
+
+                        {#let objDiv = document.getElementById("scroll");#}
+                        {#objDiv.scrollTop = objDiv.scrollHeight;#}
+                    }
+                },
+                error: function(response){
+                    alert('An error occured')
+                }
+            });
+         }, 2000)
+        </script>
+
+    {% endblock %}
+</body>
+</html>

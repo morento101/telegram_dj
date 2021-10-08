@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Group</title>
+</head>
+<body>
+    {% extends 'telegram/main.html' %}
+    {% block content %}
+
+        <h1>Create new group</h1>
+        <form action="" method="post">
+            {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label" for="title">{{ form.title.label }}</label>
+            <input type="text" class="form-control"  id="title" name="title">
+          </div>
+          <div class="form-group">
+            <label for="description">{{ form.description.label }}</label>
+            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+          </div>
+            <br />
+          <button type="submit" class="btn btn-success">Submit</button>
+        </form>
+        <hr />
+        <button class="btn btn-secondary" onclick="window.location.href='{% url 'groups' %}';">
+          Back
+        </button>
+
+    {% endblock %}
+</body>
+</html>

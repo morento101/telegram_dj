@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Response</title>
+</head>
+<body>
+    {% extends 'telegram/main.html' %}
+    {% block content %}
+        <h4>{{ response }}</h4>
+        <button class="btn btn-primary" onclick="window.location.href='{% url 'groups' %}';">
+          Back
+        </button>
+    {% endblock %}
+</body>
+</html>

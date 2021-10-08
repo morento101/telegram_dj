@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Groups</title>
+</head>
+<body>
+    {% extends 'telegram/main.html' %}
+    {% block content %}
+
+        <h3>My Groups</h3>
+
+        <form class="d-flex" method="get" style="width: 25rem">
+            <input class="form-control me-2" type="search" placeholder="Search" name="search-area" id="search-area" value="{{ search }}">
+            <input class="btn btn-outline-success" type="submit" value="Search">
+        </form>
+
+        <br />
+        <div class="list-group">
+            {% for group in groups %}
+              <a href="{% url 'group_detail' pk=group.pk %}" class="list-group-item list-group-item-action" aria-current="true">
+                <div class="d-flex w-100 justify-content-between">
+                  <h5 class="mb-1">{{ group.title }}</h5>
+                </div>
+                <p>Description: {{ group.description }}</p>
+                <p class="mb-1">Followers: {{ group.number_followers }}</p>
+              </a>
+            {% empty %}
+                <p>You haven't joined to any group</p>
+            {% endfor %}
+        </div>
+
+        {% if is_paginated %}
+        <br />
+        <nav aria-label="...">
+          <ul class="pagination justify-content-center">
+              {% if page_obj.has_previous %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ page_obj.previous_page_number }}" tabindex="-1" aria-disabled="true">Previous</a>
+                </li>
+              {% endif %}
+              {% if page_obj.has_next %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                </li>
+              {% endif %}
+          </ul>
+        </nav>
+        <br />
+        {% endif %}
+
+    {% endblock %}
+</body>
+</html>
