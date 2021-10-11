@@ -72,6 +72,11 @@ TEMPLATES = [
 WSGI_APPLICATION = 'telegram_dj.wsgi.application'
 ASGI_APPLICATION = 'telegram_dj.asgi.application'
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases

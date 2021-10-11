@@ -11,11 +11,11 @@
     <p>Description: {{ object.description }} </p>
     <p>Followers: {{ object.number_followers }} </p>
         {% if request.user not in followers %}
-            <button class="btn btn-primary" onclick="window.location.href='{% url 'join' pk=object.pk %}';">
+            <button class="btn btn-success" onclick="window.location.href='{% url 'join' pk=object.pk %}';">
               Join
             </button>
         {% else %}
-            <button class="btn btn-primary" onclick="window.location.href='{% url 'group_chat' pk=object.pk %}';">
+            <button class="btn btn-success" onclick="window.location.href='{% url 'group_chat' pk=object.pk %}';">
               Chat
             </button>
         {% endif %}
