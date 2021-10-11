@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import HomeView, RegisterView, LogoutView, GroupsListView, GroupDetailView, JoinGroupView, \
-    CreateGroupView, GetProfileView, UpdateProfileView, DeleteGroupView, MyLoginView, BrowseGroupsListView, ChatView, \
-    SendMessageView, GetMessagesView
+    CreateGroupView, UpdateProfileView, DeleteGroupView, MyLoginView, BrowseGroupsListView, ChatView, \
+    SendMessageView
 from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
@@ -19,9 +19,7 @@ urlpatterns = [
 
     path('group_chat/<int:pk>', login_required(ChatView.as_view(), login_url='login'), name='group_chat'),
     path('group_chat/send/', login_required(SendMessageView.as_view(), login_url='login'), name='send_message'),
-    path('get_messages/<int:pk>', login_required(GetMessagesView.as_view(), login_url='login'), name='get_messages'),
 
-    # path('get_profile/<int:pk>/', login_required(GetProfileView.as_view(), login_url='login'), name='get_profile'),
     path('update_profile/<int:pk>/', login_required(UpdateProfileView.as_view(),
                                                     login_url='login'), name='update_profile'),
 ]

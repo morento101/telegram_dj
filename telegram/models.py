@@ -39,7 +39,7 @@ class Message(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
     username = models.CharField(max_length=120, null=True)
-    phone = models.CharField(max_length=120, null=True, default='Не вказано')
+    phone = models.CharField(max_length=120, null=True, default='')
     email = models.CharField(max_length=120, null=True)
     photo = models.ImageField(default='default.png', null=True, blank=True)
     date_created = models.DateTimeField(auto_now_add=True, null=True)

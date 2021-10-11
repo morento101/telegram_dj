@@ -61,4 +61,3 @@ class WSConsumer(AsyncWebsocketConsumer):
                 usernames.append(username)
 
         return serialized_msg, usernames
-

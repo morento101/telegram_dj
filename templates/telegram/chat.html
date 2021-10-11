@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Chat</title>
 </head>
 <body>
     {% extends 'telegram/main.html' %}
     {% block content %}
 
-        <h1>{{ group|title }} Chat</h1>
+        <h3>{{ group|title }} Chat</h3>
         <div id="user-log"></div>
         <div id="scroll" style="overflow-y: scroll; height:410px;">
             <div id="messages-container" class="list-group">
@@ -22,9 +22,14 @@
             <div class="mb-3">
                 <input type="text" id="message" class="form-control">
             </div>
+
             <div class="mb-3">
                 <input type="submit" value="Send" class="btn btn-success">
             </div>
+            <hr />
+            <button class="btn btn-secondary" onclick="window.location.href='{% url 'groups' %}';">
+              Back
+            </button>
         </form>
 
 
@@ -103,102 +108,7 @@
                 }
             }
 
-
-            {#        let date = new Date(messages[message].field.date_send);#}
-            {#        let year = date.getFullYear();#}
-            {#        let month = date.getMonth()+1;#}
-            {#        let dt = date.getDate();#}
-            {##}
-            {#        if (dt < 10) {#}
-            {#            dt = '0' + dt;#}
-            {#        }#}
-            {#        if (month < 10) {#}
-            {#            month = '0' + month;#}
-            {#        }#}
-            {##}
-            {#        let hour = date.getUTCHours() + 3;#}
-            {#        let minute = date.getUTCMinutes();#}
-            {##}
-            {#        if (hour < 10) {#}
-            {#            hour = '0' + hour#}
-            {#        }#}
-            {##}
-            {#        if (minute < 10) {#}
-            {#            minute = '0' + minute#}
-            {#        }#}
-            {##}
-            {#        date = year + '-' + month + '-' + dt + '-' + hour + ':' + minute;#}
-            {##}
-            {#        var temp = '<div class="list-group-item list-group-item-action" aria-current="true"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1">'+username+ '</h6><small>'+date+ '</small></div><p class="mb-1">'+messages[key].value+ '</p></div>'#}
-            {##}
-            {#        if (username === data.current_user){#}
-            {#            temp = '<div class="list-group-item list-group-item-action list-group-item-secondary" aria-current="true"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1">'+username+ '</h6><small>'+date+ '</small></div><p class="mb-1">'+messages.value+ '</p></div>'#}
-            {#        }#}
-            {##}
-            {#        document.querySelector('#user-log').innerHTML = temp#}
-            {#    }#}
-            {##}
-            {##}
-                {##}
-
             </script>
-        <script>
-
-                {#setInterval(function(){#}
-                {#    $.ajax({#}
-                {#        type: 'GET',#}
-                {#        url : "/get_messages/{{ group.pk }}",#}
-                {#        success: function(response){#}
-                            {#console.log(response);#}
-                {#            $("#messages-container").empty();#}
-                {#            var count = 0;#}
-                {#            for (var key in response.messages)#}
-                {#            {#}
-                {#                var username = response.username[count]#}
-                {#                count += 1#}
-                {##}
-                {#                let date = new Date(response.messages[key].date_send);#}
-                {#                let year = date.getFullYear();#}
-                {#                let month = date.getMonth()+1;#}
-                {#                let dt = date.getDate();#}
-                {##}
-                {#                if (dt < 10) {#}
-                {#                  dt = '0' + dt;#}
-                {#                }#}
-                {#                if (month < 10) {#}
-                {#                  month = '0' + month;#}
-                {#                }#}
-                {##}
-                {#                let hour = date.getUTCHours() + 3;#}
-                {#                let minute = date.getUTCMinutes();#}
-                {##}
-                {#                if (hour < 10) {#}
-                {#                    hour = '0' + hour#}
-                {#                }#}
-                {##}
-                {#                if (minute < 10) {#}
-                {#                    minute = '0' + minute#}
-                {#                }#}
-                {##}
-                {#                date = year + '-' + month + '-' + dt + '-' + hour + ':' + minute;#}
-                {##}
-                {#                var temp = '<div class="list-group-item list-group-item-action" aria-current="true"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1">'+username+'</h6><small>'+date+'</small></div><p class="mb-1">'+response.messages[key].value+'</p></div>'#}
-                {##}
-                {#                if (username === response.current_user){#}
-                {#                    temp = '<div class="list-group-item list-group-item-action list-group-item-secondary" aria-current="true"><div class="d-flex w-100 justify-content-between"><h6 class="mb-1">'+username+'</h6><small>'+date+'</small></div><p class="mb-1">'+response.messages[key].value+'</p></div>'#}
-                {#                }#}
-                {#                $("#messages-container").append(temp);#}
-                {##}
-                                {#let objDiv = document.getElementById("scroll");#}
-                                {#objDiv.scrollTop = objDiv.scrollHeight;#}
-                {#            }#}
-                {#        },#}
-                {#        error: function(response){#}
-                            {#alert('An error occured')#}
-                {#        }#}
-                {#    });#}
-                {# }, 2000)#}
-        </script>
 
     {% endblock %}
 </body>

@@ -1,16 +1,15 @@
 from django.contrib.auth.views import LoginView
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, UpdateView, DeleteView
 from forms import CreateUserForm, LoginForm
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from .models import TeleGroup, UserProfile, Message
 from django.db.models import Q
 from django.contrib import messages as flash_messages
-from django.contrib.auth.hashers import check_password
 
 
 class HomeView(View):
@@ -48,22 +47,6 @@ class MyLoginView(LoginView):
         form_invalid = super(MyLoginView, self).form_invalid(form)
         flash_messages.error(self.request, form.errors[list(form.errors.keys())[0]].as_text()[1:])
         return form_invalid
-
-    # def form_valid(self, form):
-    #     form_valid = super(MyLoginView, self).form_valid(form)
-    #     username = form.cleaned_data['username']
-    #     password = form.cleaned_data['password']
-    #     user = User.objects.get(username=username)
-    #     if user:
-    #         hash_pass = user.password
-    #         check = check_password(password, hash_pass)
-    #         if check:
-    #             return form_valid
-    #         else:
-    #             messages.error(self.request, 'Password is not correct')
-    #
-    #     else:
-    #         messages.error(self.request, 'User with such username does not exist')
 
     def get_success_url(self):
         return reverse_lazy('groups')
@@ -141,17 +124,13 @@ class DeleteGroupView(DeleteView):
     success_url = reverse_lazy('groups')
 
 
-class GetProfileView(TemplateView):
-    template_name = 'telegram/get_profile.html'
-
-
 class UpdateProfileView(UpdateView):
     model = UserProfile
     fields = ('username', 'phone', 'email', 'photo')
     template_name = 'telegram/update_profile.html'
 
     def get_success_url(self):
-        return reverse('get_profile', kwargs={'pk': self.object.pk})
+        return reverse('update_profile', kwargs={'pk': self.object.pk})
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -193,21 +172,3 @@ class SendMessageView(View):
 
         context = {'user_pk': user_pk, 'group_pk': group_pk, 'message': message}
         return HttpResponse('ok', context)
-
-
-class GetMessagesView(View):
-    def get(self, request, pk):
-        group = get_object_or_404(TeleGroup, pk=pk)
-        messages = Message.objects.filter(group=group).all()
-
-        lst = []
-        for message in messages:
-            user_id = message.user_id
-            user = get_object_or_404(User, pk=user_id)
-            if user:
-                username = user.username
-                lst.append(username)
-
-        context = {'messages': list(messages.values()), 'username': lst, 'current_user': request.user.username}
-
-        return JsonResponse(context)
