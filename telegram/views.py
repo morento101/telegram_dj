@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, UpdateView, DeleteView
-from forms import CreateUserForm, LoginForm
+from telegram.forms import CreateUserForm, LoginForm
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from .models import TeleGroup, UserProfile, Message
