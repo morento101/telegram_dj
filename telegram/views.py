@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from .models import TeleGroup, UserProfile, Message
 from django.db.models import Q
 from django.contrib import messages as flash_messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class HomeView(View):
@@ -52,13 +53,13 @@ class MyLoginView(LoginView):
         return reverse_lazy('groups')
 
 
-class LogoutView(View):
+class LogoutView(LoginRequiredMixin, View):
     def get(self, request):
         logout(request)
         return redirect('home')
 
 
-class GroupsListView(ListView):
+class GroupsListView(LoginRequiredMixin, ListView):
     model = TeleGroup
     context_object_name = 'groups'
     paginate_by = 10
@@ -81,7 +82,7 @@ class GroupsListView(ListView):
         return context
 
 
-class GroupDetailView(DetailView):
+class GroupDetailView(LoginRequiredMixin, DetailView):
     model = TeleGroup
 
     def get_context_data(self, **kwargs):
@@ -90,21 +91,23 @@ class GroupDetailView(DetailView):
         return context
 
 
-class JoinGroupView(TemplateView):
+class JoinGroupView(LoginRequiredMixin, TemplateView):
     template_name = 'telegram/group_response.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         group = get_object_or_404(TeleGroup, pk=kwargs['pk'])
         flag = group.add_user(self.request)
+
         if flag:
             context['response'] = f"You've joined to the group {group}"
         else:
             context['response'] = f"You're already in the group {group}"
+
         return context
 
 
-class CreateGroupView(CreateView):
+class CreateGroupView(LoginRequiredMixin, CreateView):
     model = TeleGroup
     fields = ('title', 'description')
 
@@ -118,13 +121,13 @@ class CreateGroupView(CreateView):
         return response
 
 
-class DeleteGroupView(DeleteView):
+class DeleteGroupView(LoginRequiredMixin, DeleteView):
     model = TeleGroup
     template_name = 'telegram/telegroup_confirm_delete.html'
     success_url = reverse_lazy('groups')
 
 
-class UpdateProfileView(UpdateView):
+class UpdateProfileView(LoginRequiredMixin, UpdateView):
     model = UserProfile
     fields = ('username', 'phone', 'email', 'photo')
     template_name = 'telegram/update_profile.html'
@@ -138,7 +141,7 @@ class UpdateProfileView(UpdateView):
         return context
 
 
-class BrowseGroupsListView(ListView):
+class BrowseGroupsListView(LoginRequiredMixin, ListView):
     model = TeleGroup
     context_object_name = 'groups'
     template_name = 'telegram/browse_groups.html'
@@ -150,7 +153,7 @@ class BrowseGroupsListView(ListView):
         return queryset
 
 
-class ChatView(View):
+class ChatView(LoginRequiredMixin, View):
     def get(self, request, pk):
         group = get_object_or_404(TeleGroup, pk=pk)
         if group:
@@ -158,7 +161,7 @@ class ChatView(View):
             return render(request, 'telegram/chat.html', context)
 
 
-class SendMessageView(View):
+class SendMessageView(LoginRequiredMixin, View):
     def post(self, request):
         user_pk = request.POST.get('user_pk')
         group_pk = request.POST.get('group_pk')

@@ -6,6 +6,26 @@ from .views import GroupDetailView, GroupsListView, BrowseGroupsListView
 from .models import TeleGroup, UserProfile, Message
 
 
+class Authentication(TestCase):
+    def setUp(self) -> None:
+        pass
+        # self.factory = RequestFactory()
+
+    def test_authentication_for_views_without_args(self):
+        list_of_urls = [
+            'logout', 'groups', 'create_group',
+            'browse_groups', 'send_message',
+                        ]
+        responses = map(lambda a: self.client.get(reverse(a)), list_of_urls)
+
+        for response in responses:
+            self.assertEqual(response.status_code, 302)
+
+    # def test_authentication_for_groups_view(self):
+    #     logout_request = self.client.get(reverse('groups'))
+    #     self.assertEqual(logout_request.status_code, 302)
+
+
 class TelegroupLogicTestCases(TestCase):
     def setUp(self) -> None:
         self.factory = RequestFactory()
@@ -15,6 +35,7 @@ class TelegroupLogicTestCases(TestCase):
             email='test_case@gmail.com',
             password='test_case_password',
         )
+        self.client.force_login(self.user)
         self.group = TeleGroup.objects.create(
             title='test_group',
             description='test_group_description',
@@ -31,15 +52,14 @@ class TelegroupLogicTestCases(TestCase):
                          )
 
     def test_add_user_to_owner_and_follower(self):
-        factory = RequestFactory()
-        request = factory.get('')
-        request.user = self.user
+        self.factory = RequestFactory()
+        self.request.user = self.user
 
-        self.group.add_user(request)
+        self.group.add_user(self.request)
         self.assertIn(self.user, self.group.follower.all())
         self.assertEqual(self.group.number_followers, 1)
 
-        self.group.connect_owner(request)
+        self.group.connect_owner(self.request)
         self.assertEqual(self.user, self.group.owner)
 
     def test_group_list_view(self):
@@ -50,7 +70,7 @@ class TelegroupLogicTestCases(TestCase):
         queryset = GroupsListView.get_queryset(a)
         self.assertQuerysetEqual(queryset, TeleGroup.objects.all())
 
-        self.client.force_login(self.user)
+        # self.client.force_login(self.user)
         response = self.client.get(reverse('groups'), follow=True)
         self.assertContains(response, f'{self.group}')
 
@@ -64,11 +84,11 @@ class TelegroupLogicTestCases(TestCase):
         self.assertQuerysetEqual(queryset, TeleGroup.objects.filter(title__contains=a.request.GET.get('search-area')))
 
     def test_group_detail_view(self):
+        self.request.user = self.user
         response = GroupDetailView.as_view()(self.request, pk=self.group.pk)
         self.assertEqual(response.status_code, 200)
 
     def test_create_group_view(self):
-        self.client.force_login(self.user)
         self.client.post(
             reverse('create_group'),
             data={
@@ -80,12 +100,10 @@ class TelegroupLogicTestCases(TestCase):
         self.assertEqual(TeleGroup.objects.filter(title='test_create_group_title').exists(), True)
 
     def test_delete_group_view_get(self):
-        self.client.force_login(self.user)
         response = self.client.get(reverse('delete_group', args=(self.group.pk,)), follow=True)
         self.assertContains(response, f'Are are you sure you want to delete {self.group.title}')
 
     def test_delete_group_view_post(self):
-        self.client.force_login(self.user)
         response = self.client.post(reverse('delete_group', args=(self.group.pk,)), follow=True)
         self.assertRedirects(response, reverse('groups'), status_code=302)
 
