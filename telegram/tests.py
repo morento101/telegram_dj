@@ -1,5 +1,5 @@
 from django.http import QueryDict
-from django.test import TestCase, RequestFactory, Client
+from django.test import TestCase, RequestFactory
 from django.contrib.auth.models import User
 from django.urls import reverse
 from .views import GroupDetailView, GroupsListView, BrowseGroupsListView
@@ -8,8 +8,15 @@ from .models import TeleGroup, UserProfile, Message
 
 class Authentication(TestCase):
     def setUp(self) -> None:
-        pass
-        # self.factory = RequestFactory()
+        self.user = User.objects.create(
+            username='test_case',
+            email='test_case@gmail.com',
+            password='test_case_password',
+        )
+        self.group = TeleGroup.objects.create(
+            title='test_group',
+            description='test_group_description',
+        )
 
     def test_authentication_for_views_without_args(self):
         list_of_urls = [
@@ -21,9 +28,25 @@ class Authentication(TestCase):
         for response in responses:
             self.assertEqual(response.status_code, 302)
 
-    # def test_authentication_for_groups_view(self):
-    #     logout_request = self.client.get(reverse('groups'))
-    #     self.assertEqual(logout_request.status_code, 302)
+    def test_authentication_for_group_detail(self):
+        response = self.client.get(reverse('group_detail', args=(self.group.pk,)))
+        self.assertEqual(response.status_code, 302)
+
+    def test_authentication_for_join_group(self):
+        response = self.client.get(reverse('join', args=(self.group.pk,)))
+        self.assertEqual(response.status_code, 302)
+
+    def test_authentication_for_delete_group(self):
+        response = self.client.get(reverse('delete_group', args=(self.group.pk,)))
+        self.assertEqual(response.status_code, 302)
+
+    def test_authentication_for_group_chat(self):
+        response = self.client.get(reverse('group_chat', args=(self.group.pk,)))
+        self.assertEqual(response.status_code, 302)
+
+    def test_authentication_for_update_profile(self):
+        response = self.client.get(reverse('update_profile', args=(self.user.userprofile.pk,)))
+        self.assertEqual(response.status_code, 302)
 
 
 class TelegroupLogicTestCases(TestCase):
@@ -70,7 +93,6 @@ class TelegroupLogicTestCases(TestCase):
         queryset = GroupsListView.get_queryset(a)
         self.assertQuerysetEqual(queryset, TeleGroup.objects.all())
 
-        # self.client.force_login(self.user)
         response = self.client.get(reverse('groups'), follow=True)
         self.assertContains(response, f'{self.group}')
 
@@ -109,7 +131,6 @@ class TelegroupLogicTestCases(TestCase):
 
     def test_browse_groups_view(self):
         self.request.user = self.user
-        self.client.force_login(self.user)
 
         a = BrowseGroupsListView()
         a.request = self.request
@@ -118,5 +139,42 @@ class TelegroupLogicTestCases(TestCase):
 
         response = self.client.get(reverse('browse_groups'))
         self.assertContains(response, f'{self.group.title}')
+
+
+class MessageTestCases(TestCase):
+    def setUp(self) -> None:
+        self.user = User.objects.create(
+            username='test_case',
+            email='test_case@gmail.com',
+            password='test_case_password',
+        )
+        self.client.force_login(self.user)
+        self.group = TeleGroup.objects.create(
+            title='test_group',
+            description='test_group_description',
+        )
+        self.message = Message.objects.create(
+            group=self.group, user=self.user, value='test_case_message'
+        )
+
+    def test_send_message_view(self):
+        self.client.post(
+            reverse('send_message'),
+            data={
+                'user_pk': self.user.pk,
+                'group_pk': self.group.pk,
+                'message': 'test_message'
+            }
+        )
+        self.assertEqual(Message.objects.filter(value='test_message').exists(), True)
+
+    async def test_my_wsconsumer(self):
+        from channels.testing import WebsocketCommunicator
+        from telegram_dj.asgi import application
+
+        communicator = WebsocketCommunicator(application, f"ws/get_messages/{self.group.pk}")
+        connected, subprotocol = await communicator.connect()
+        assert connected
+        await communicator.disconnect()
 
 # TODO: add test for messages and others views

@@ -46,6 +46,7 @@ class WSConsumer(AsyncWebsocketConsumer):
             self.group_name,
             self.channel_name
         )
+        await self.close()
 
     @sync_to_async
     def get_data(self):
