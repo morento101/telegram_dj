@@ -13,12 +13,10 @@ from django.contrib import messages as flash_messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-class HomeView(View):
-    def get(self, request):
-        return redirect('groups')
-
-
 class RegisterView(View):
+    """
+    Class-based view for registration
+    """
     def get(self, request):
         if request.user.is_authenticated:
             return redirect('groups')
@@ -39,6 +37,9 @@ class RegisterView(View):
 
 
 class MyLoginView(LoginView):
+    """
+    Django generic view for login page
+    """
     template_name = 'telegram/login.html'
     redirect_authenticated_user = True
     form_class = LoginForm
@@ -54,12 +55,18 @@ class MyLoginView(LoginView):
 
 
 class LogoutView(LoginRequiredMixin, View):
+    """
+    Logout view based on View class
+    """
     def get(self, request):
         logout(request)
-        return redirect('home')
+        return redirect('groups')
 
 
 class GroupsListView(LoginRequiredMixin, ListView):
+    """
+    Generic ListView where list of all user's groups are displayed
+    """
     model = TeleGroup
     context_object_name = 'groups'
     paginate_by = 10
@@ -83,6 +90,9 @@ class GroupsListView(LoginRequiredMixin, ListView):
 
 
 class GroupDetailView(LoginRequiredMixin, DetailView):
+    """
+    Detail view for all groups, where displayed all info about certain group
+    """
     model = TeleGroup
 
     def get_context_data(self, **kwargs):
@@ -92,6 +102,9 @@ class GroupDetailView(LoginRequiredMixin, DetailView):
 
 
 class JoinGroupView(LoginRequiredMixin, TemplateView):
+    """
+    View for joining to the certain group
+    """
     template_name = 'telegram/group_response.html'
 
     def get_context_data(self, **kwargs):
@@ -108,6 +121,10 @@ class JoinGroupView(LoginRequiredMixin, TemplateView):
 
 
 class CreateGroupView(LoginRequiredMixin, CreateView):
+    """
+    View for creating new TeleGroup instance with obligatory two fields.
+    Automate adding user to group and connecting owner to group
+    """
     model = TeleGroup
     fields = ('title', 'description')
 
@@ -122,12 +139,19 @@ class CreateGroupView(LoginRequiredMixin, CreateView):
 
 
 class DeleteGroupView(LoginRequiredMixin, DeleteView):
+    """
+    Delete TeleGroup instance from database.
+    There are confirmation template. If form is submitted, then group is deleted
+    """
     model = TeleGroup
     template_name = 'telegram/telegroup_confirm_delete.html'
     success_url = reverse_lazy('groups')
 
 
 class UpdateProfileView(LoginRequiredMixin, UpdateView):
+    """
+    View for updating info in user's profile
+    """
     model = UserProfile
     fields = ('username', 'phone', 'email', 'photo')
     template_name = 'telegram/update_profile.html'
@@ -142,6 +166,10 @@ class UpdateProfileView(LoginRequiredMixin, UpdateView):
 
 
 class BrowseGroupsListView(LoginRequiredMixin, ListView):
+    """
+    View inherited from Django generic ListView for displaying
+    groups which user does not follow with pagination
+    """
     model = TeleGroup
     context_object_name = 'groups'
     template_name = 'telegram/browse_groups.html'
@@ -154,6 +182,9 @@ class BrowseGroupsListView(LoginRequiredMixin, ListView):
 
 
 class ChatView(LoginRequiredMixin, View):
+    """
+    Displays group's chat with all history
+    """
     def get(self, request, pk):
         group = get_object_or_404(TeleGroup, pk=pk)
         if group:
@@ -162,6 +193,10 @@ class ChatView(LoginRequiredMixin, View):
 
 
 class SendMessageView(LoginRequiredMixin, View):
+    """
+    View for AJAX request which creates new Message instance.
+    Data is received from ChatView form
+    """
     def post(self, request):
         user_pk = request.POST.get('user_pk')
         group_pk = request.POST.get('group_pk')
@@ -173,5 +208,4 @@ class SendMessageView(LoginRequiredMixin, View):
             )
             new_message.save()
 
-        context = {'user_pk': user_pk, 'group_pk': group_pk, 'message': message}
-        return HttpResponse('ok', context)
+        return HttpResponse('ok')

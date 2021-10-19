@@ -1,11 +1,10 @@
 from django.urls import path
-from .views import HomeView, RegisterView, LogoutView, GroupsListView, GroupDetailView, JoinGroupView, \
+from .views import RegisterView, LogoutView, GroupsListView, GroupDetailView, JoinGroupView, \
     CreateGroupView, UpdateProfileView, DeleteGroupView, MyLoginView, BrowseGroupsListView, ChatView, \
     SendMessageView
-from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
-    path('', HomeView.as_view(), name='home'),
+    path('', GroupsListView.as_view(), name='groups'),
     path('register/', RegisterView.as_view(), name='register'),
     path('login/', MyLoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
